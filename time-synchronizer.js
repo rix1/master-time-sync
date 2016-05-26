@@ -14,7 +14,7 @@ function handler (req, res) {
 }
 
 io.on('connection', function (socket) {
-	console.log('socket connection established');
+	console.log('socket connection with '+ socket.handshake.headers.origin +' established');
 	socket.on('timesync', function (data) {
 		console.log('message', data);
 		socket.emit('timesync', {

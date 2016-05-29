@@ -2,7 +2,7 @@ var fs = require('fs');
 var http = require('http');
 var timesyncServer = require('./node_modules/timesync/server/');
 
-var PORT = 8081;
+var PORT = 8123;
 
 // Create an http server
 var server = http.createServer(handler);

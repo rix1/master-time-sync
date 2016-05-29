@@ -1,25 +1,32 @@
-var app = require('http').createServer(handler);
-var io = require('socket.io')(app);
 var fs = require('fs');
+var http = require('http');
+var timesyncServer = require('./node_modules/timesync/server/');
 
 var PORT = 8081;
 
-app.listen(PORT);
+// Create an http server
+var server = http.createServer(handler);
+server.listen(PORT);
 console.log('Server listening at http://localhost:' + PORT);
 
+// Attach a timesync request handler to the server. Optionally, a custom path
+// can be provided as second argument (defaults to '/timesync')
+timesyncServer.attachServer(server);
+
+// just server a static index.html file
 function handler (req, res) {
-	console.log('request', req.url);
-	res.writeHead(404);
-	res.end('Not found');
+  sendFile(res, 'index.html');
 }
 
-io.on('connection', function (socket) {
-	console.log('socket connection with '+ socket.handshake.headers.origin +' established');
-	socket.on('timesync', function (data) {
-		console.log('message', data);
-		socket.emit('timesync', {
-			id: data && 'id' in data ? data.id : null,
-			result: Date.now()
-		});
-	});
-});
+function sendFile(res, filename) {
+  fs.readFile(filename, function (err, data) {
+    if (err) {
+      res.writeHead(500);
+      res.end('Error loading ' + filename.split('/').pop());
+    }
+    else {
+      res.writeHead(200);
+      res.end(data);
+    }
+  });
+}
